@@ -25,7 +25,10 @@ bool Lab_Color::Init()
     cvShowImage("Image2", img2);
     cvWaitKey(0);
     return true;
-} 
+}
+//RGB -> XYZ -> LMS -> LMS -> Lab color space or....
+//RGB to Lab Color
+
 void Lab_Color::Convert()
 {
    CvSize size = cvGetSize(img1);
@@ -44,12 +47,34 @@ void Lab_Color::Convert()
     }*/ 
 
 }
-
-void Lab_Color::to_XYZ(uchar *r, uchar* g, uchar* b)
+//computes the total mean of Lab 
+void Lab_Color::Mean(IplImage *data, int num)
 {
+    //b-> "b", g -> "a", r -> L (assuming for now)
+    float total_L, total_a, total_b;
+    float total;
+    for (int y = 0; y < data->height; y++) {
+        for (int x = 0; x < data->width; x++) {
+             char* Lab = ((char*)data->imageData+ data->widthStep*y);
+             total_L += (float)Lab[2] ;
+             total_a += (float)Lab[1];
+             total_b += (float)Lab[0];
 
-    
-
+            total++;
         }
+    }  
+    if(num == 1)
+    {
+        src_L_avg = total_L/total;
+        src_a_avg = total_a/total;
+        src_b_avg = total_b/total;
+    }
+    else
+    {
+        tar_L_avg = total_L/total;
+        tar_a_avg = total_a/total;
+        tar_b_avg = total_b/total;
+    } 
 
+}
 
