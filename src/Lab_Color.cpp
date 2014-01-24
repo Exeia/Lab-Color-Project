@@ -77,4 +77,30 @@ void Lab_Color::Mean(IplImage *data, int num)
     } 
 
 }
+void Lab_Color::Difference(IplImage* data, bool isSrc)
+{
+   if(isSrc)
+   {
+        
+    for (int y = 0; y < data->height; y++) {
+        for (int x = 0; x < data->width; x++) {
+             char* Lab = ((char*)data->imageData+ data->widthStep*y);
+             sL[y*data->width +x] = (float)Lab[2] -src_L_avg;             
+             sa[y*data->width +x] = (float)Lab[1] -src_a_avg;             
+             sb[y*data->width +x] = (float)Lab[0] -src_b_avg;             
+        }
+    }  
+   }
+   else 
+   {
+    for (int y = 0; y < data->height; y++) {
+        for (int x = 0; x < data->width; x++) {
+             char* Lab = ((char*)data->imageData+ data->widthStep*y);
+             tL[y*data->width +x] = (float)Lab[2] -tar_L_avg;             
+             ta[y*data->width +x] = (float)Lab[1] -tar_a_avg;             
+             tb[y*data->width +x] = (float)Lab[0] -tar_b_avg;             
+        }
+    }  
+   }
 
+}

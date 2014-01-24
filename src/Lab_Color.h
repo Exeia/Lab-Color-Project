@@ -11,8 +11,10 @@ class Lab_Color {
         float *sL, *sa, *sb, *tL, *ta, *tb;
 
         void Mean(IplImage *, int );
+        
         void Std_dev();
-
+        //the current lab - the average
+        void Difference(IplImage *, bool isSrc);
 	public:
         Lab_Color(IplImage* i1, IplImage* i2);
         ~Lab_Color(void);
