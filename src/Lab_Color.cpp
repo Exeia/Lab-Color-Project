@@ -1,5 +1,5 @@
 #include "Lab_Color.h"
-
+#include <math.h>
 #include "cv.h"
 #include "highgui.h"
 using namespace std;
@@ -68,12 +68,14 @@ void Lab_Color::Mean(IplImage *data, int num)
         src_L_avg = total_L/total;
         src_a_avg = total_a/total;
         src_b_avg = total_b/total;
+        total_src = total; 
     }
     else
     {
         tar_L_avg = total_L/total;
         tar_a_avg = total_a/total;
         tar_b_avg = total_b/total;
+        total_tar = total;
     } 
 
 }
@@ -103,4 +105,30 @@ void Lab_Color::Difference(IplImage* data, bool isSrc)
     }  
    }
 
+}
+void Lab_Color::Sum()
+{ 
+    for (int i = 0; i < sizeof(sL); i++) {
+      t_Lsum +=  pow(tL[i]-tar_L_avg,2);
+      t_asum +=  pow(ta[i]-tar_a_avg,2);
+      t_bsum +=  pow(tb[i]-tar_b_avg,2);
+    }
+    for (int i = 0; i < sizeof(tL); i++) {
+      s_Lsum +=  pow(sL[i]-src_L_avg,2);
+      s_asum +=  pow(sa[i]-src_a_avg,2);
+      s_bsum +=  pow(sb[i]-src_b_avg,2);
+    }
+    
+
+}
+
+void Lab_Color::Std_dev()
+{
+   for (int y = 0; y < img1->height; y++) {
+       for (int x = 0; x < img1->width; x++) {
+           new_L[y*img1->width + x] = (sqrt(t_Lsum/total_tar)/sqrt(s_Lsum/total_src)) * sL[y*img1->width +x]; 
+           new_a[y*img1->width + x] = (sqrt(t_asum/total_tar)/sqrt(s_asum/total_src)) * sa[y*img1->width +x]; 
+           new_b[y*img1->width + x] = (sqrt(t_bsum/total_tar)/sqrt(s_bsum/total_src)) * sb[y*img1->width +x]; 
+       }
+   }
 }

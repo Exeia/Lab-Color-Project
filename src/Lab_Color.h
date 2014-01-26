@@ -9,10 +9,14 @@ class Lab_Color {
         float src_L_avg, src_a_avg, src_b_avg, tar_L_avg, tar_a_avg, tar_b_avg;
         //stored Lab values for source and target image
         float *sL, *sa, *sb, *tL, *ta, *tb;
-
+        float *new_L, *new_a, *new_b;
+        float total_tar, total_src;
+        float t_Lsum, t_asum,t_bsum,s_Lsum,s_asum,s_bsum;
         void Mean(IplImage *, int );
-        
+        void Sum(); 
         void Std_dev();
+        void Transfer();
+
         //the current lab - the average
         void Difference(IplImage *, bool isSrc);
 	public:
