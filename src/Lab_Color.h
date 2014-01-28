@@ -18,7 +18,7 @@ class Lab_Color {
         void Transfer();
 
         //the current lab - the average
-        void Difference(IplImage *, bool isSrc);
+        void Difference();
 	public:
         Lab_Color(IplImage* i1, IplImage* i2);
         ~Lab_Color(void);
