@@ -35,15 +35,25 @@ void Lab_Color::Transfer()
 
    img_result = cvCreateImage(size, img1->depth, 3);
 
+   cvCvtColor(img2, img2, CV_Lab2RGB);
    for (int y  = 0; y < img2->height; y++) {
-       uchar * map= (uchar*) (img2->imageData +y * img2->widthStep);
+       //uchar * map= (uchar*) (img2->imageData +y * img2->widthStep);
        
+      // uchar * map= (uchar*) img2->imageData ;
        for (int x = 0; x < img2->width; x++) {
-           map[3*x] = new_b[y*img2->width +x];
-           map[3*x+1] =new_a[y*img2->width +x] ;
-           map[3*x+2] =new_L[y*img2->width +x];
+           /*map[0] =new_b[y*img2->width +x] ;
+           map[1] =new_a[y*img2->width +x];
+           map[2] =new_L[y*img2->width +x];*/
+ // B
+ // G
+
+           ((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels + 2]=new_a[y*img2->width +x];// R
+           ((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels +1]=new_L[y*img2->width +x];// R
        }
    }
+   
+   cvCvtColor(img1, img1, CV_Lab2RGB);
+   cvCvtColor(img2, img2, CV_Lab2RGB);
 }
 void Lab_Color::Convert()
 {
@@ -56,8 +66,8 @@ void Lab_Color::Convert()
    Difference();
   // Difference(img2, false);
   Sum();
-   //Std_dev();
-   //Transfer();
+   Std_dev();
+   Transfer();
     /*for (int y = 0; y < img->height; y++) {
     for(int x = 0; x < img->width; x++) {
         uchar *blue = ((uchar*)(img->imageData + img->widthStep*y))[x*3];
@@ -75,6 +85,7 @@ void Lab_Color::Mean(IplImage *data, int num)
     float total;
     for (int y = 0; y < data->height; y++) {
         for (int x = 0; x < data->width; x++) {
+             //uchar* Lab = ((uchar*)data->imageData+ data->widthStep*y);
              uchar* Lab = ((uchar*)data->imageData+ data->widthStep*y);
              total_L += (float)Lab[2] ;
              total_a += (float)Lab[1];
@@ -89,10 +100,6 @@ void Lab_Color::Mean(IplImage *data, int num)
         src_a_avg = total_a/total;
         src_b_avg = total_b/total;
         total_src = total;
-       cout << "Source: " << endl; 
-   cout <<"L" <<src_L_avg << endl; 
-   cout <<"a" <<src_a_avg << endl; 
-   cout <<"b" <<src_b_avg << endl; 
     }
     else
     {
@@ -100,10 +107,6 @@ void Lab_Color::Mean(IplImage *data, int num)
         tar_a_avg = total_a/total;
         tar_b_avg = total_b/total;
         total_tar = total;
-        cout << "Source: " << endl; 
-        cout <<"L" <<src_L_avg << endl; 
-        cout <<"a" <<src_a_avg << endl; 
-        cout <<"b" <<src_b_avg << endl; 
     } 
 
 }
@@ -112,7 +115,6 @@ void Lab_Color::Difference( )
     sL = new float[img1->height * img1->width ];
     sa = new float[img1->height * img1->width ];
     sb = new float[img1->height * img1->width ];
-    cout <<"Difference: src" << endl;
     
     for (int y = 0; y < img1->height; y++) {
         for (int x = 0; x < img1->width; x++) {
@@ -120,7 +122,6 @@ void Lab_Color::Difference( )
              sL[y*img1->width +x] = (float)Lab1[2] - src_L_avg;             
              sa[y*img1->width +x] = (float)Lab1[1] -src_a_avg;             
              sb[y*img1->width +x] = (float)Lab1[0] -src_b_avg;  
-             cout << (float)Lab1[2] <<" "<< sL[y*img1->width +x] << endl;             
              //cout <<"a" <<src_a_avg << endl; 
              //cout <<"b" <<src_b_avg << endl; 
                            
@@ -132,16 +133,38 @@ void Lab_Color::Difference( )
 void Lab_Color::Sum()
 { 
     
+    for (int y = 0; y < img1->height; y++) {
+        for (int x = 0; x < img1->width; x++) {
+             uchar* Lab1 = ((uchar*)img2->imageData+ img2->widthStep*y);
+             s_Lsum += pow((float)Lab1[2],2);
+             s_asum += pow((float)Lab1[1],2);
+             s_bsum += pow((float)Lab1[0],2);
+        }
+    }
+    for (int y = 0; y < img2->height; y++) {
+        for (int x = 0; x < img2->width; x++) {
+             uchar* Lab2 = ((uchar*)img2->imageData+ img2->widthStep*y);
+             t_Lsum += pow((float)Lab2[2],2);
+             t_asum += pow((float)Lab2[1],2);
+             t_bsum += pow((float)Lab2[0],2);
+        }
+    }
 
 }
 
 void Lab_Color::Std_dev()
 {
+   
+    new_L = new float[img1->height * img1->width], new_a = new float[img1->height * img1->width],
+    new_b= new float[img1->height * img1->width];
    for (int y = 0; y < img1->height; y++) {
        for (int x = 0; x < img1->width; x++) {
-           new_L[y*img1->width + x] = (sqrt(t_Lsum/total_tar)/sqrt(s_Lsum/total_src)) * sL[y*img1->width +x]; 
-           new_a[y*img1->width + x] = (sqrt(t_asum/total_tar)/sqrt(s_asum/total_src)) * sa[y*img1->width +x]; 
-           new_b[y*img1->width + x] = (sqrt(t_bsum/total_tar)/sqrt(s_bsum/total_src)) * sb[y*img1->width +x]; 
+           int c = y*img1->width + x;
+           new_L[c] = ((sqrt(t_Lsum/total_tar)/sqrt(s_Lsum/total_src)) * sL[y*img1->width +x]) + tar_L_avg; 
+           new_a[c] = ((sqrt(t_asum/total_tar)/sqrt(s_asum/total_src)) * sa[y*img1->width +x]) + tar_a_avg; 
+           new_b[c] = ((sqrt(t_bsum/total_tar)/sqrt(s_bsum/total_src)) * sb[y*img1->width +x])+tar_b_avg;
+
+   //       cout << "L " << new_L[y*img1->width + x] << endl; 
        }
    }
 }
