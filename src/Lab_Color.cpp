@@ -18,6 +18,12 @@ Lab_Color::~Lab_Color()
 
 bool Lab_Color::Init()
 {
+    int size1 = img1->height *img1->width;
+    int size2 = img2->height *img2->width;
+    if (size1 > size2 || size1 <) {
+        //resize
+        /* code */
+    }
     Convert();
     cvNamedWindow("Image1");
     cvNamedWindow("Image2");
@@ -37,18 +43,18 @@ void Lab_Color::Transfer()
 
    cvCvtColor(img2, img2, CV_Lab2RGB);
    for (int y  = 0; y < img2->height; y++) {
-       //uchar * map= (uchar*) (img2->imageData +y * img2->widthStep);
+       uchar * map= (uchar*) (img2->imageData +y * img2->widthStep);
        
       // uchar * map= (uchar*) img2->imageData ;
        for (int x = 0; x < img2->width; x++) {
-           /*map[0] =new_b[y*img2->width +x] ;
-           map[1] =new_a[y*img2->width +x];
-           map[2] =new_L[y*img2->width +x];*/
+           map[0] =new_b[y*img2->width +x] ;
+           map[x*img2->nChannels+1] =new_a[y*img2->width +x];
+           map[x*img2->nChannels+2] =new_L[y*img2->width +x];
  // B
  // G
 
-           ((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels + 2]=new_a[y*img2->width +x];// R
-           ((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels +1]=new_L[y*img2->width +x];// R
+           //((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels + 2]=new_L[y*img2->width +x];// R
+           //((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels +1]=new_a[y*img2->width +x];// R
        }
    }
    
@@ -65,7 +71,7 @@ void Lab_Color::Convert()
    Mean(img2,2);
    Difference();
   // Difference(img2, false);
-  Sum();
+   Sum();
    Std_dev();
    Transfer();
     /*for (int y = 0; y < img->height; y++) {
