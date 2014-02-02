@@ -9,7 +9,11 @@ Lab_Color::Lab_Color(IplImage* i1,IplImage* i2 )
     img1 = i1;
     img2 = i2;
 }
-
+Lab_Color::Lab_Color(Mat i1, Mat i2)
+{
+    im1 = i1;
+    im2 = i2;
+}
 Lab_Color::~Lab_Color()
 {
     cvReleaseImage(&img1);
@@ -20,7 +24,7 @@ bool Lab_Color::Init()
 {
     int size1 = img1->height *img1->width;
     int size2 = img2->height *img2->width;
-    if (size1 > size2 || size1 <) {
+    if (size1 > size2 ) {
         //resize
         /* code */
     }
@@ -41,7 +45,6 @@ void Lab_Color::Transfer()
 
    img_result = cvCreateImage(size, img1->depth, 3);
 
-   cvCvtColor(img2, img2, CV_Lab2RGB);
    for (int y  = 0; y < img2->height; y++) {
        uchar * map= (uchar*) (img2->imageData +y * img2->widthStep);
        
@@ -88,7 +91,7 @@ void Lab_Color::Mean(IplImage *data, int num)
 {
     //b-> "b", g -> "a", r -> L (assuming for now)
     float total_L, total_a, total_b;
-    float total;
+    float total= data->width * data->height;
     for (int y = 0; y < data->height; y++) {
         for (int x = 0; x < data->width; x++) {
              //uchar* Lab = ((uchar*)data->imageData+ data->widthStep*y);
@@ -97,7 +100,6 @@ void Lab_Color::Mean(IplImage *data, int num)
              total_a += (float)Lab[1];
              total_b += (float)Lab[0];
 
-            total++;
         }
     }
     if(num == 1)
@@ -173,4 +175,75 @@ void Lab_Color::Std_dev()
    //       cout << "L " << new_L[y*img1->width + x] << endl; 
        }
    }
+}
+
+void Lab_Color::matMean(Mat dat, int num)
+{
+    float total_L, total_a, total_b;
+    float total= dat.rows*dat.cols;
+    unsigned char  *input = (unsigned char*) (dat.data);
+    for (int y = 0; y < dat.cols; y++) {
+        for (int x = 0; x < dat.rows; x++) {
+             total_L += (float)input[dat.step*y+x+2] ;
+             total_a += (float)input[dat.step*y+x+1];
+             total_b += (float)input[dat.step*y+x];
+
+        }
+    }
+    if(num == 1)
+    {
+        src_L_avg = total_L/total;
+        src_a_avg = total_a/total;
+        src_b_avg = total_b/total;
+        total_src = total;
+    }
+    else
+    {
+        tar_L_avg = total_L/total;
+        tar_a_avg = total_a/total;
+        tar_b_avg = total_b/total;
+        total_tar = total;
+    } 
+}
+void Lab_Color::matSum()
+{
+
+    unsigned char  *input = (unsigned char*) (im1.data);
+    unsigned char  *input1 = (unsigned char*) (im2.data);
+    for (int y = 0; y < im1.cols; y++) {
+        for (int x = 0; x < im1.rows; x++) {
+             s_Lsum += pow((float)input[im1.step*y+x+2],2);
+             s_asum += pow((float)input[im1.step*y+x+1],2);
+             s_bsum += pow((float)input[im1.step*y+x],2);
+        }
+    }
+    for (int y = 0; y < im2.cols; y++) {
+        for (int x = 0; x < im2.rows; x++) {
+             t_Lsum += pow((float)input1[im2.step*y+x+2],2);
+             t_asum += pow((float)input1[im2.step*y+x+1],2);
+             t_bsum += pow((float)input1[im2.step*y+x],2);
+        }
+    }
+}
+void Lab_Color::matStd_dev()
+{
+
+    new_L = new float[im1.rows * im1.cols], new_a = new float[im1.rows * im1.cols],
+    new_b= new float[im1.cols * im1.rows];
+   for (int y = 0; y < im1.cols; y++) {
+       for (int x = 0; x < im1.rows; x++) {
+           int c = y*img1->width + x;
+           new_L[c] = ((sqrt(t_Lsum/total_tar)/sqrt(s_Lsum/total_src)) * sL[y*img1->width +x]) + tar_L_avg; 
+           new_a[c] = ((sqrt(t_asum/total_tar)/sqrt(s_asum/total_src)) * sa[y*img1->width +x]) + tar_a_avg; 
+           new_b[c] = ((sqrt(t_bsum/total_tar)/sqrt(s_bsum/total_src)) * sb[y*img1->width +x])+tar_b_avg;
+
+   //       cout << "L " << new_L[y*img1->width + x] << endl; 
+       }
+   }
+}
+
+
+void Lab_Color::matTransfer()
+{
+
 }
