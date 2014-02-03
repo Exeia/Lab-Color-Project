@@ -20,10 +20,6 @@ bool Lab_Color::Init()
 {
     int size1 = img1->height *img1->width;
     int size2 = img2->height *img2->width;
-    if (size1 > size2 || size1 <) {
-        //resize
-        /* code */
-    }
     Convert();
     cvNamedWindow("Image1");
     cvNamedWindow("Image2");
