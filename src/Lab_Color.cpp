@@ -24,6 +24,7 @@ bool Lab_Color::Init()
 {
     int size1 = img1->height *img1->width;
     int size2 = img2->height *img2->width;
+    Mat orig = im2.clone();
     if (size1 > size2 ) {
         //resize
         /* code */
@@ -33,11 +34,13 @@ bool Lab_Color::Init()
     cvNamedWindow("Image2");
     cvShowImage("Image1", img1);
     cvShowImage("Image2", img2);*/
-    namedWindow( "Display window 1", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window 1", im1 );                   // Show our image inside it.
+    namedWindow( "Target", WINDOW_AUTOSIZE );// Create a window for display.
+    imshow( "Target", im1 );                   // Show our image inside it.
 
-    namedWindow( "Display window 2", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window 2", im2 );                   // Show our image inside it.
+    namedWindow( "Source", WINDOW_AUTOSIZE );// Create a window for display.
+    imshow( "Source", orig );                   // Show our image inside it.
+    namedWindow( "Result", WINDOW_AUTOSIZE );// Create a window for display.
+    imshow( "Result", im2 );                   // Show our image inside it.
     cvWaitKey(0);
     return true;
 }
