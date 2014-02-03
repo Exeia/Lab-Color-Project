@@ -22,12 +22,15 @@ Lab_Color::~Lab_Color()
 
 bool Lab_Color::Init()
 {
-    int size1 = img1->height *img1->width;
-    int size2 = img2->height *img2->width;
+    int size1 = im1.rows *im1.cols;
+    int size2 = im2.rows *im2.cols;
     Mat orig = im2.clone();
     if (size1 > size2 ) {
-        //resize
-        /* code */
+        resize(im1, im1,Size(im2.cols,im2.rows),0,0, INTER_LINEAR);
+    }
+    else if(size1 < size2)
+    {
+        resize(im2, im2,Size(im1.cols,im1.rows),0,0, INTER_LINEAR);
     }
     Convert();
     /*cvNamedWindow("Image1");
