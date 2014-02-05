@@ -301,9 +301,34 @@ void Lab_Color::matTransfer()
            input[im2.step*y+x+2] =new_L2[y*im2.rows +x];*/
  // B
  // G
-          im2.at<Vec3b>(x,y)[0] = new_b2[y*im2.rows +x] ;
-           im2.at<Vec3b>(x,y)[1] = new_a2[y*im2.rows +x] ; 
+          
+           im2.at<Vec3b>(x,y)[0] = new_b2[y*im2.rows +x] ;
+          // im2.at<Vec3b>(x,y)[0] = new_b2[y*im2.rows +x] ;
+          if(new_a2[y*im2.rows+x] > 128)
+          {
+             im2.at<Vec3b>(x,y)[1] = 128; 
+          } 
+          else if (new_a2[y*im2.rows+x] < -128)
+          {
+             im2.at<Vec3b>(x,y)[1] = -128; 
+          }
+          else
+          {
+           im2.at<Vec3b>(x,y)[1] = new_a2[y*im2.rows +x] ;
+          }
+
+          if(new_L2[y*im2.rows+x] > 100)
+          {
+             im2.at<Vec3b>(x,y)[2] = 100; 
+          } 
+          else if (new_L2[y*im2.rows+x] < 0)
+          {
+             im2.at<Vec3b>(x,y)[2] = 0; 
+          }
+          else
+          {
            im2.at<Vec3b>(x,y)[2] = new_L2[y*im2.rows +x] ;
+          }
            //((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels + 2]=new_L[y*img2->width +x];// R
            //((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels +1]=new_a[y*img2->width +x];// R
        }
@@ -311,4 +336,44 @@ void Lab_Color::matTransfer()
    
    cvtColor(im1, im1, CV_Lab2RGB);
    cvtColor(im2, im2, CV_Lab2RGB);
+   for (int y  = 0; y < im2.cols; y++) {
+       
+      // uchar * map= (uchar*) img2->imageData ;
+       for (int x = 0; x < im2.rows; x++) {
+           /*input[im2.step*y+x] =new_b2[y*im2.rows +x] ;
+           input[im2.step*y+x+1] =new_a2[y*im2.rows +x];
+           input[im2.step*y+x+2] =new_L2[y*im2.rows +x];*/
+ // B
+ // G
+        if( im2.at<Vec3b>(x,y)[0] > 255)
+        { 
+          im2.at<Vec3b>(x,y)[0] = 255 ;
+        }
+        else if ( im2.at<Vec3b>(x,y)[0]< 0)
+        {
+            im2.at<Vec3b>(x,y)[0] = 0; 
+        } 
+        
+        if( im2.at<Vec3b>(x,y)[1] > 255)
+        { 
+          im2.at<Vec3b>(x,y)[1] = 255 ;
+        }
+        else if ( im2.at<Vec3b>(x,y)[1]< 0)
+        {
+            im2.at<Vec3b>(x,y)[1] = 0; 
+        } 
+        
+        
+        if( im2.at<Vec3b>(x,y)[2] > 255)
+        { 
+          im2.at<Vec3b>(x,y)[2] = 255 ;
+        }
+        else if ( im2.at<Vec3b>(x,y)[2]< 0)
+        {
+            im2.at<Vec3b>(x,y)[2] = 0; 
+        } 
+           //((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels + 2]=new_L[y*img2->width +x];// R
+           //((uchar *)(img2->imageData + y*img2->widthStep))[x*img2->nChannels +1]=new_a[y*img2->width +x];// R
+       }
+   }
 }
